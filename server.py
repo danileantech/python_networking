@@ -1,26 +1,11 @@
-import pickle
 import socket
-import os
-import pandas as pd
 
-SOCKET_PATH = "/tmp/socket"
+HOST = '127.0.0.1'
+PORT = 12345
 
-if os.path.exists(SOCKET_PATH):
-    os.remove(SOCKET_PATH)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT)) # Tells the socket to listen on the given host and port
+server_socket.listen(5)
 
-df = pd.DataFrame({'name': ['John', 'Jane', 'Jim', 'Jill'], 'age': [25, 30, 35, 40]})
+print(f"Server is listening on {HOST}:{PORT}")
 
-data_bytes = pickle.dumps(df) # serialize data (encode)
-
-# Create a socket obj and bind it
-with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
-    s.bind(SOCKET_PATH)
-
-    # Listen for connections
-    s.listen(1)
-    print("Waiting for connection...")
-
-    # Accept a connection
-    conn, addr = s.accept()
-    with conn:
-        conn.sendall(data_bytes)
